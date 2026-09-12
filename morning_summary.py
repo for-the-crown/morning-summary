@@ -18,8 +18,8 @@ OUTPUT_PATH = Path(__file__).parent / "output" / "briefing.html"
 
 SPORTS_TEAMS = [
     {"label": "Virginia Tech Football", "sport": "football/college-football", "team_id": "259"},
-    {"label": "Virginia Tech Basketball", "sport": "basketball/mens-college-basketball", "team_id": "259"},
     {"label": "Carolina Panthers", "sport": "football/nfl", "team_id": "car"},
+    {"label": "Virginia Tech Basketball", "sport": "basketball/mens-college-basketball", "team_id": "259"},
 ]
 
 NEWS_FEEDS = [
@@ -228,7 +228,8 @@ def render(weather, sports, news):
             body = f"<ul>{lis}</ul>"
         news_rows.append(f'<div class="item"><h3>{escape(n["label"])}</h3>{body}</div>')
 
-    return f"""<meta name="viewport" content="width=device-width, initial-scale=1">
+    return f"""<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Charlotte Morning Briefing</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/icon-192.png" type="image/png">
@@ -290,8 +291,18 @@ def render(weather, sports, news):
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     gap: 8px;
+  }}
+  .masthead-id {{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }}
+  .masthead-id .mark {{
+    width: 44px;
+    height: 44px;
+    flex: none;
   }}
   .masthead h1 {{
     font-family: "Newsreader", Georgia, serif;
@@ -299,6 +310,15 @@ def render(weather, sports, news):
     font-size: clamp(1.7rem, 4vw, 2.4rem);
     margin: 0;
     text-wrap: balance;
+  }}
+  .masthead .kicker {{
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
   }}
   .masthead .meta {{
     font-family: "IBM Plex Mono", monospace;
@@ -427,7 +447,16 @@ def render(weather, sports, news):
 </style>
 
 <div class="masthead">
-  <h1>Charlotte Morning Briefing</h1>
+  <div class="masthead-id">
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <circle cx="20" cy="20" r="20" fill="var(--ink)" />
+      <path d="M 30.49 27.34 A 12.8 12.8 0 1 1 30.49 12.66" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" />
+    </svg>
+    <div>
+      <h1>Charlotte Morning Briefing</h1>
+      <div class="kicker">Weather &middot; Sports &middot; Business &amp; Tech News</div>
+    </div>
+  </div>
   <div class="meta">{escape(today)}</div>
 </div>
 
