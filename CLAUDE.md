@@ -5,8 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 A single-file Python script (`morning_summary.py`) that fetches weather, sports,
-news, and local-events data and renders it as a standalone HTML fragment (title,
-`<style>`, and body markup — no `<html>`/`<head>` wrapper) at `output/briefing.html`.
+and news data and renders it as a standalone HTML fragment (title, `<style>`,
+and body markup — no `<html>`/`<head>` wrapper) at `output/briefing.html`.
 It deliberately uses only the Python standard library so it runs anywhere without
 a `pip install`.
 
@@ -16,12 +16,7 @@ a `pip install`.
 python3 morning_summary.py
 ```
 
-Prints the output path on success. No build step, linter, or test suite exists in
-this repo.
-
-Optional environment variable:
-- `TICKETMASTER_API_KEY` — enables the Local Events section. Without it, that
-  section renders a placeholder message instead of failing.
+Prints the output path on success. No build step or linter exists in this repo.
 
 ## Running tests
 
@@ -30,8 +25,8 @@ python3 -m unittest discover -s tests
 ```
 
 Tests use only `unittest`/`unittest.mock` (stdlib, matching the script itself)
-and never touch the network — `get_weather`/`get_sports`/`get_news`/`get_events`
-are tested by patching `morning_summary.fetch`. Run a single test with e.g.
+and never touch the network — `get_weather`/`get_sports`/`get_news` are tested
+by patching `morning_summary.fetch`. Run a single test with e.g.
 `python3 -m unittest tests.test_morning_summary.FormatGameTests.test_completed_win`.
 
 ## Architecture
@@ -47,8 +42,6 @@ into HTML:
   computes a W-L record for the schedule accordion.
 - `get_news()` — parses RSS via `xml.etree.ElementTree` for each feed in
   `NEWS_FEEDS`.
-- `get_events()` — queries the Ticketmaster Discovery API, gated on
-  `TICKETMASTER_API_KEY`.
 
 Each function returns a plain dict/list (never raises past its own `try/except`),
 with an `"ok"`/`"error"` (or `"error"` key per item) convention so `render()` can
@@ -76,5 +69,4 @@ properties for a light/dark theme pair (`prefers-color-scheme` plus a
 plus `workflow_dispatch` and pushes to `main`) and publishes `output/briefing.html`
 as `index.html` to GitHub Pages, at https://for-the-crown.github.io/morning-summary/.
 The repo is public because GitHub Pages requires that on the free plan; there's
-nothing sensitive in the code, and `TICKETMASTER_API_KEY` is a repo secret, never
-committed. To add or update it: `gh secret set TICKETMASTER_API_KEY`.
+nothing sensitive in the code or its output.

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Fetch weather, sports, news, and local events, and render the Charlotte
-morning briefing as a standalone HTML fragment (no dependencies beyond the
-Python standard library, so it runs anywhere without a pip install)."""
+"""Fetch weather, sports, and news, and render the Charlotte morning briefing
+as a standalone HTML fragment (no dependencies beyond the Python standard
+library, so it runs anywhere without a pip install)."""
 
 import json
-import os
 import re
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -29,8 +28,6 @@ NEWS_FEEDS = [
     {"label": "Finance", "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories"},
     {"label": "Wealth Management", "url": "https://www.wealthmanagement.com/rss.xml"},
 ]
-
-TICKETMASTER_API_KEY = os.environ.get("TICKETMASTER_API_KEY", "")
 
 WEATHER_CODES = {
     0: "Clear sky", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast",
@@ -165,27 +162,7 @@ def get_news():
     return results
 
 
-def get_events():
-    if not TICKETMASTER_API_KEY:
-        return {"ok": False, "reason": "no_key"}
-    try:
-        url = (
-            "https://app.ticketmaster.com/discovery/v2/events.json"
-            f"?apikey={TICKETMASTER_API_KEY}&postalCode={ZIP_CODE}&radius=25&unit=miles"
-            "&sort=date,asc&size=6"
-        )
-        data = json.loads(fetch(url))
-        out = []
-        for e in data.get("_embedded", {}).get("events", []):
-            venue = e.get("_embedded", {}).get("venues", [{}])[0].get("name", "")
-            date = e.get("dates", {}).get("start", {}).get("localDate", "")
-            out.append({"name": e["name"], "venue": venue, "date": date, "url": e.get("url", "")})
-        return {"ok": True, "events": out}
-    except Exception as ex:
-        return {"ok": False, "reason": str(ex)}
-
-
-def render(weather, sports, news, events):
+def render(weather, sports, news):
     today = datetime.now(EASTERN).strftime("%A, %B %-d, %Y")
 
     # --- weather ---
@@ -250,21 +227,6 @@ def render(weather, sports, news, events):
             )
             body = f"<ul>{lis}</ul>"
         news_rows.append(f'<div class="item"><h3>{escape(n["label"])}</h3>{body}</div>')
-
-    # --- events ---
-    if not events["ok"]:
-        if events.get("reason") == "no_key":
-            events_html = '<p class="muted">Set a <code>TICKETMASTER_API_KEY</code> environment variable to show nearby events here.</p>'
-        else:
-            events_html = f'<p class="error">Events unavailable ({escape(events.get("reason",""))}).</p>'
-    elif not events["events"]:
-        events_html = '<p class="muted">Nothing found nearby this week.</p>'
-    else:
-        lis = "".join(
-            f'<li><a href="{escape(e["url"])}">{escape(e["name"])}</a><span class="line-date"> &middot; {escape(e["date"])} &middot; {escape(e["venue"])}</span></li>'
-            for e in events["events"]
-        )
-        events_html = f"<ul>{lis}</ul>"
 
     return f"""<title>Charlotte Morning Briefing</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -475,10 +437,6 @@ def render(weather, sports, news, events):
     <h2>Business &amp; Tech News</h2>
     {''.join(news_rows)}
   </div>
-  <div class="section">
-    <h2>Local Events</h2>
-    {events_html}
-  </div>
 </div>
 """
 
@@ -487,8 +445,7 @@ def main():
     weather = get_weather()
     sports = get_sports()
     news = get_news()
-    events = get_events()
-    html = render(weather, sports, news, events)
+    html = render(weather, sports, news)
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(html)
     print(str(OUTPUT_PATH))

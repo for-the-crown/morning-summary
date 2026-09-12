@@ -31,8 +31,6 @@ jobs:
           python-version: "3.x"
 
       - name: Run briefing script
-        env:
-          TICKETMASTER_API_KEY: ${{ secrets.TICKETMASTER_API_KEY }}
         run: python3 morning_summary.py
 
       - name: Prepare Pages content

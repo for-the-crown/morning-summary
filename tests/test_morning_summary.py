@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Basic tests for morning_summary.py.
 
-Network-touching functions (get_weather, get_sports, get_news, get_events) are
-tested by mocking morning_summary.fetch, so the suite runs offline and fast.
+Network-touching functions (get_weather, get_sports, get_news) are tested by
+mocking morning_summary.fetch, so the suite runs offline and fast.
 """
 
 import sys
@@ -193,34 +193,6 @@ class GetNewsTests(unittest.TestCase):
         self.assertTrue(all(r["error"] and not r["items"] for r in results))
 
 
-class GetEventsTests(unittest.TestCase):
-    @patch.object(ms, "TICKETMASTER_API_KEY", "")
-    def test_no_key(self):
-        events = ms.get_events()
-        self.assertFalse(events["ok"])
-        self.assertEqual(events["reason"], "no_key")
-
-    @patch.object(ms, "TICKETMASTER_API_KEY", "testkey")
-    @patch.object(ms, "fetch")
-    def test_ok_path(self, mock_fetch):
-        mock_fetch.return_value = (
-            b'{"_embedded": {"events": [{"name": "Show", "url": "https://tm.example/1", '
-            b'"dates": {"start": {"localDate": "2024-09-20"}}, '
-            b'"_embedded": {"venues": [{"name": "The Fillmore"}]}}]}}'
-        )
-        events = ms.get_events()
-        self.assertTrue(events["ok"])
-        self.assertEqual(events["events"][0]["venue"], "The Fillmore")
-
-    @patch.object(ms, "TICKETMASTER_API_KEY", "testkey")
-    @patch.object(ms, "fetch")
-    def test_error_path(self, mock_fetch):
-        mock_fetch.side_effect = OSError("boom")
-        events = ms.get_events()
-        self.assertFalse(events["ok"])
-        self.assertIn("boom", events["reason"])
-
-
 class RenderTests(unittest.TestCase):
     def _ok_weather(self):
         return {
@@ -240,29 +212,23 @@ class RenderTests(unittest.TestCase):
     def _ok_news(self):
         return [{"label": "Tech", "error": None, "items": [{"title": "Story", "link": "https://example.com"}]}]
 
-    def _ok_events(self):
-        return {"ok": True, "events": [{"name": "Show", "venue": "The Fillmore", "date": "2024-09-20", "url": "https://tm.example/1"}]}
-
     def test_all_sections_ok(self):
-        html = ms.render(self._ok_weather(), self._ok_sports(), self._ok_news(), self._ok_events())
+        html = ms.render(self._ok_weather(), self._ok_sports(), self._ok_news())
         self.assertIn("Charlotte Morning Briefing", html)
         self.assertIn("71", html)
         self.assertIn("Virginia Tech Football", html)
         self.assertIn("tag-win", html)
         self.assertIn("Full schedule (1-0)", html)
         self.assertIn("Story", html)
-        self.assertIn("The Fillmore", html)
 
-    def test_error_and_placeholder_sections(self):
+    def test_error_sections(self):
         weather = {"ok": False, "error": "timed out"}
         sports = [{"label": "Panthers", "error": "boom", "last": None, "next": None, "schedule": []}]
         news = [{"label": "Tech", "error": "boom", "items": []}]
-        events = {"ok": False, "reason": "no_key"}
-        html = ms.render(weather, sports, news, events)
+        html = ms.render(weather, sports, news)
         self.assertIn("Weather unavailable", html)
         self.assertIn("Unavailable (boom)", html)
         self.assertIn("Feed unavailable.", html)
-        self.assertIn("TICKETMASTER_API_KEY", html)
 
 
 if __name__ == "__main__":
