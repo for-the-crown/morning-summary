@@ -69,3 +69,12 @@ code → label).
 All output is styled inline in `render()`'s `<style>` block using CSS custom
 properties for a light/dark theme pair (`prefers-color-scheme` plus a
 `data-theme` override).
+
+## Deployment
+
+`.github/workflows/publish.yml` regenerates the briefing daily (10:00 UTC cron,
+plus `workflow_dispatch` and pushes to `main`) and publishes `output/briefing.html`
+as `index.html` to GitHub Pages, at https://for-the-crown.github.io/morning-summary/.
+The repo is public because GitHub Pages requires that on the free plan; there's
+nothing sensitive in the code, and `TICKETMASTER_API_KEY` is a repo secret, never
+committed. To add or update it: `gh secret set TICKETMASTER_API_KEY`.
