@@ -449,8 +449,8 @@ def render(weather, sports, news):
 <div class="masthead">
   <div class="masthead-id">
     <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
-      <circle cx="20" cy="20" r="20" fill="var(--ink)" />
-      <path d="M 30.49 27.34 A 12.8 12.8 0 1 1 30.49 12.66" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" />
+      <circle cx="20" cy="20" r="20" fill="#1A2233" />
+      <path d="M 30.49 27.34 A 12.8 12.8 0 1 1 30.49 12.66" fill="none" stroke="#B8863C" stroke-width="6" stroke-linecap="round" />
     </svg>
     <div>
       <h1>Charlotte Morning Briefing</h1>
