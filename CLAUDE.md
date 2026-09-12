@@ -23,6 +23,17 @@ Optional environment variable:
 - `TICKETMASTER_API_KEY` — enables the Local Events section. Without it, that
   section renders a placeholder message instead of failing.
 
+## Running tests
+
+```
+python3 -m unittest discover -s tests
+```
+
+Tests use only `unittest`/`unittest.mock` (stdlib, matching the script itself)
+and never touch the network — `get_weather`/`get_sports`/`get_news`/`get_events`
+are tested by patching `morning_summary.fetch`. Run a single test with e.g.
+`python3 -m unittest tests.test_morning_summary.FormatGameTests.test_completed_win`.
+
 ## Architecture
 
 The script is organized as one `fetch_*`/`get_*` function per data source, all
