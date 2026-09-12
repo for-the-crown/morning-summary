@@ -37,6 +37,8 @@ jobs:
         run: |
           mkdir -p _site
           cp output/briefing.html _site/index.html
+          cp manifest.json _site/manifest.json
+          cp -R icons _site/icons
 
       - uses: actions/upload-pages-artifact@v3
         with:

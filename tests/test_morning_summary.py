@@ -221,6 +221,13 @@ class RenderTests(unittest.TestCase):
         self.assertIn("Full schedule (1-0)", html)
         self.assertIn("Story", html)
 
+    def test_home_screen_tags_present(self):
+        html = ms.render(self._ok_weather(), self._ok_sports(), self._ok_news())
+        self.assertIn('name="viewport"', html)
+        self.assertIn('rel="manifest" href="manifest.json"', html)
+        self.assertIn('rel="apple-touch-icon" href="icons/apple-touch-icon.png"', html)
+        self.assertIn('name="apple-mobile-web-app-capable" content="yes"', html)
+
     def test_error_sections(self):
         weather = {"ok": False, "error": "timed out"}
         sports = [{"label": "Panthers", "error": "boom", "last": None, "next": None, "schedule": []}]

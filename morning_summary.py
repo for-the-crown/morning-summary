@@ -230,6 +230,13 @@ def render(weather, sports, news):
 
     return f"""<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Charlotte Morning Briefing</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Charlotte AM">
+<meta name="theme-color" content="#F4F6F8">
+<meta name="theme-color" content="#10151F" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
   :root {{
