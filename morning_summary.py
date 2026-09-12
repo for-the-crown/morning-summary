@@ -228,7 +228,8 @@ def render(weather, sports, news):
             body = f"<ul>{lis}</ul>"
         news_rows.append(f'<div class="item"><h3>{escape(n["label"])}</h3>{body}</div>')
 
-    return f"""<title>Charlotte Morning Briefing</title>
+    return f"""<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charlotte Morning Briefing</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
   :root {{
