@@ -475,6 +475,12 @@ def render(weather, sports, news):
     {''.join(news_rows)}
   </div>
 </div>
+
+<script>
+  window.addEventListener("pageshow", (event) => {{
+    if (event.persisted) window.location.reload();
+  }});
+</script>
 """
 
 
