@@ -192,6 +192,22 @@ class GetNewsTests(unittest.TestCase):
         results = ms.get_news()
         self.assertTrue(all(r["error"] and not r["items"] for r in results))
 
+    ATOM = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <feed xmlns="http://www.w3.org/2005/Atom">
+        <entry><title>Reddit Story One</title><link href="https://reddit.com/1"/></entry>
+        <entry><title>Reddit Story Two</title><link href="https://reddit.com/2"/></entry>
+    </feed>"""
+
+    @patch.object(ms, "fetch")
+    def test_atom_feed(self, mock_fetch):
+        mock_fetch.return_value = self.ATOM
+        results = ms.get_news()
+        entry = results[0]
+        self.assertIsNone(entry["error"])
+        self.assertEqual(len(entry["items"]), 2)
+        self.assertEqual(entry["items"][0]["title"], "Reddit Story One")
+        self.assertEqual(entry["items"][0]["link"], "https://reddit.com/1")
+
 
 class RenderTests(unittest.TestCase):
     def _ok_weather(self):

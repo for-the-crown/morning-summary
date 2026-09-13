@@ -27,7 +27,10 @@ NEWS_FEEDS = [
     {"label": "FinTech", "url": "https://www.finextra.com/rss/headlines.aspx"},
     {"label": "Finance", "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories"},
     {"label": "Wealth Management", "url": "https://www.wealthmanagement.com/rss.xml"},
+    {"label": "Reddit News", "url": "https://www.reddit.com/r/news/top/.rss?limit=5&t=day"},
 ]
+
+ATOM_NS = "{http://www.w3.org/2005/Atom}"
 
 WEATHER_CODES = {
     0: "Clear sky", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast",
@@ -151,11 +154,22 @@ def get_news():
         entry = {"label": feed["label"], "items": [], "error": None}
         try:
             root = ET.fromstring(fetch(feed["url"]))
-            for it in root.findall(".//item")[:4]:
-                entry["items"].append({
-                    "title": strip_html(it.findtext("title", "")),
-                    "link": (it.findtext("link", "") or "").strip(),
-                })
+            items = root.findall(".//item")
+            if items:
+                for it in items[:4]:
+                    entry["items"].append({
+                        "title": strip_html(it.findtext("title", "")),
+                        "link": (it.findtext("link", "") or "").strip(),
+                    })
+            else:
+                # Reddit (and other Atom feeds) use <entry>/<link href="…">
+                # instead of RSS's <item>/<link>text</link>.
+                for it in root.findall(f".//{ATOM_NS}entry")[:4]:
+                    link = it.find(f"{ATOM_NS}link")
+                    entry["items"].append({
+                        "title": strip_html(it.findtext(f"{ATOM_NS}title", "")),
+                        "link": ((link.get("href") if link is not None else "") or "").strip(),
+                    })
         except Exception as ex:
             entry["error"] = str(ex)
         results.append(entry)
