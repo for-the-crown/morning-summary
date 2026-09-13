@@ -2,8 +2,9 @@ name: Publish briefing
 
 on:
   schedule:
-    # 10:00 UTC ≈ 5-6am Eastern, before anyone's checking the site.
-    - cron: "0 10 * * *"
+    # 8:07 UTC ≈ 3-4am Eastern. Minute offset from :00 avoids the
+    # top-of-hour congestion GitHub's docs warn can delay or drop runs.
+    - cron: "7 8 * * *"
   workflow_dispatch: {}
   push:
     branches: [main]
